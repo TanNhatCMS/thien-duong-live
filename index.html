@@ -79,7 +79,7 @@ input::placeholder{color:#7d6a52}
   <canvas id="c"></canvas>
   <div id="top" class="hud">
     <span class="chip" id="me" hidden><b id="meName"></b><span class="hint">đang cầu nguyện</span></span>
-    <span class="chip"><span class="n" id="count">0</span><span>phật tử</span></span>
+    <span class="chip"><span class="n" id="count">0</span><span>tín hữu</span></span>
   </div>
   <div id="board" hidden><h3>Tấm lòng thành</h3><ol id="boardList"></ol></div>
   <div id="feed" aria-live="polite"></div>
@@ -279,13 +279,13 @@ try { const s=localStorage.getItem('phapdanh'); if(s) input.value=s; } catch(e){
 form.addEventListener('submit', e=>{
   e.preventDefault();
   const name=input.value.trim().replace(/\s+/g,' ').slice(0,20); if(!name) return;
-  if(!freeSeat()){ showToast('Thiên đàng điện đã kín chỗ, xin chờ xét xử lượt sau.'); return; }
+  if(!freeSeat()){ showToast('Thiên Đàng đã kín chỗ, xin chờ lượt sau.'); return; }
   try{ localStorage.setItem('phapdanh',name); }catch(e){}
   audioStart();
   me = addVisitor(name, mySkin, false, true);
   gate.hidden=true; document.getElementById('me').hidden=false; document.getElementById('meName').textContent=name;
   for (const id of ['mute','leave','gifts','nextTrack']) document.getElementById(id).hidden=false;
-  say(name,' đã vào chánh điện'); showToast('Hoan nghênh '+name+' vào chánh điện'); ttsSpeak('Hoan nghênh '+name+' vào chánh điện');
+  say(name,' đã vào Thiên Đàng'); showToast('Hoan nghênh '+name+' vào Thiên Đàng'); ttsSpeak('Hoan nghênh '+name+' vào Thiên Đàng');
 });
 document.getElementById('gifts').addEventListener('click', e=>{ const b=e.target.closest('button'); if(!b||!me) return; donate(me, +b.dataset.coins, b.dataset.fx, SUTRA[Math.floor(Math.random()*SUTRA.length)]); });
 document.getElementById('nextTrack').addEventListener('click', ()=>{ if(AC) playTrack(trackIdx+1); });
