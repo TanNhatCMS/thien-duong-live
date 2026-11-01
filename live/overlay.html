@@ -285,7 +285,7 @@ function frame(now){
     const fly = tc.fly && A[tc.fly]?.naturalWidth ? A[tc.fly] : null;
     const el = t - LOAD_T - ti*0.4; // staggered descent from the sky on load
     let ty = tc.y;
-    if (fly && el < 2.4){ const pr = Math.max(0, el/2.4), fr = Math.min(7, Math.floor(pr*8)), ease = 1 - Math.pow(1-pr, 2);
+    if (fly && el < 2.4 && !SEATED){ const pr = Math.max(0, el/2.4), fr = Math.min(7, Math.floor(pr*8)), ease = 1 - Math.pow(1-pr, 2);
       ty = tc.y - (1-ease)*700;
       ctx.drawImage(fly, fr*212, 0, 212, 300, tc.x-212*tc.s/2, ty+bob-300*tc.s, 212*tc.s, 300*tc.s); }
     else if (idle){ const fw=220, fh=260, fr=Math.floor(t*1.2+ti*1.3)%4; ctx.drawImage(idle, fr*fw, 0, fw, fh, tc.x-fw*tc.s/2, tc.y+bob-fh*tc.s, fw*tc.s, fh*tc.s); }
@@ -337,6 +337,7 @@ const w=c.measureText(s).width+60,x=540-w/2,y=322;c.fillStyle='rgba(40,16,6,.88)
 c.lineWidth=2;c.strokeStyle='rgba(226,176,79,.9)';c.stroke();c.fillStyle='#ffd98a';c.textAlign='center';c.textBaseline='middle';c.fillText(s,540,y+28);c.restore();}
 const _k='frame',_o=window[_k];window[_k]=function(t){_o(t);try{_g(t);}catch(e){}};})();
 let LOAD_T = null; // RAF clock, not Date.now: RAF time starts near 0 on load
+const SEATED = new URLSearchParams(location.search).has('seated'); // demo flag: skip descent, show seated front view
 layout(24); requestAnimationFrame(frame);
 </script>
 </body>
