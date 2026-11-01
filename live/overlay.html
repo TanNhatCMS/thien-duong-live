@@ -131,7 +131,7 @@ function reseat(){
 document.getElementById('count').textContent = '0/24';
 
 /* the three fixed teachers in front of the altar */
-const TEACHERS = [ { name:'Michael', skin:'monk', idle:'idle_monk', x:300, y:1085, s:.36 }, { name:'Chúa Trời', skin:'master', idle:'idle_master', x:540, y:1100, s:.4, master:true }, { name:'Gabriel', skin:'nun', idle:'idle_nun', x:780, y:1085, s:.36 } ];
+const TEACHERS = [ { name:'Michael', skin:'monk', idle:'idle_monk', x:300, y:1100, s:.45 }, { name:'Chúa Trời', skin:'master', idle:'idle_master', x:540, y:1110, s:.5, master:true }, { name:'Gabriel', skin:'nun', idle:'idle_nun', x:780, y:1100, s:.45 } ];
 
 function addVisitor(p, instant){
   if (visitors.has(p.id)) { Object.assign(visitors.get(p.id), { name:p.name, skin:p.skin, avatar:p.avatar, coins:p.coins }); return; }
