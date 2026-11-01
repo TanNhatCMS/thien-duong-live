@@ -211,9 +211,14 @@ function playTrack(i){
 }
 function setDuck(on){ if(!musicGain) return; const t=AC.currentTime; musicGain.gain.cancelScheduledValues(t); musicGain.gain.setValueAtTime(musicGain.gain.value,t); musicGain.gain.linearRampToValueAtTime(on?.18:.55, t+.4); }
 function bell(big){
+  haloPulse = 1;
+  if(!AC||muted) return;
+  const el = new Audio('assets/sounds/bell.mp3'); el.volume = big?1:.8;
+  el.play().catch(()=>bellSynth(big));
+}
+function bellSynth(big){
   if(!AC||muted) return; const t=AC.currentTime, k = big?1.6:1;
   for (const [f,a,d] of [[432,.5,6],[1296,.18,3.5],[2160,.08,2.2]]) { const o=AC.createOscillator(); o.type='sine'; o.frequency.value=f/(big?2:1); const g=AC.createGain(); g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(a*k,t+.02); g.gain.exponentialRampToValueAtTime(.0005,t+d*k); o.connect(g); g.connect(master); o.start(t); o.stop(t+d*k+.1); }
-  haloPulse = 1;
 }
 // Pick a Vietnamese voice explicitly. Setting lang alone is not enough: with no vi voice installed the browser
 // falls back to its default (usually English) voice and reads Vietnamese text with English sounds.
@@ -320,13 +325,21 @@ function tick(now){
   ctx.restore();
   // candle flicker overlay
   ctx.save(); ctx.globalCompositeOperation='lighter'; ctx.globalAlpha=.06+.04*Math.sin(t*9)*Math.sin(t*13.3); ctx.fillStyle='#ffb347'; ctx.fillRect(0,300,SW,900); ctx.restore();
-  // teachers on the thrones (same positions as the overlay: x 424/540/653, bottom y 900)
+  // teachers on the thrones (same positions as the overlay: x 424/540/653, bottom y 900).
+  // On page load they fly down from the sky and land on the thrones, like the overlay.
+  if (tick.teachersStart===undefined) tick.teachersStart=t;
   const TEACHERS=[{name:'Michael',fly:'fly_monk',stat:'monk',x:424,y:900,s:.45},{name:'Chúa Trời',fly:'fly_master',stat:'master',x:540,y:900,s:.5},{name:'Gabriel',fly:'fly_nun',stat:'nun',x:653,y:900,s:.45}];
   for (const [ti,tc] of TEACHERS.entries()){
     const bob=Math.sin(t*1.1+ti*2.1)*3, im=A[tc.fly];
-    if (im?.naturalWidth) ctx.drawImage(im, 7*212, 0, 212, 300, tc.x-212*tc.s/2, tc.y+bob-300*tc.s, 212*tc.s, 300*tc.s);
+    const el=t-tick.teachersStart-ti*0.4;
+    let ty=tc.y;
+    if (im?.naturalWidth && el<2.4){
+      const pr=Math.max(0,el/2.4), fr=Math.min(7,Math.floor(pr*8)), ease=1-Math.pow(1-pr,2);
+      ty=tc.y-(1-ease)*700;
+      ctx.drawImage(im, fr*212, 0, 212, 300, tc.x-212*tc.s/2, ty+bob-300*tc.s, 212*tc.s, 300*tc.s);
+    } else if (im?.naturalWidth) ctx.drawImage(im, 7*212, 0, 212, 300, tc.x-212*tc.s/2, tc.y+bob-300*tc.s, 212*tc.s, 300*tc.s);
     else drawSprite(A[tc.stat], tc.x, tc.y+bob, tc.s*1.05, 1);
-    nameTag(tc.name, tc.x, tc.y+bob-tc.s*260-22, tc.s*0.6, false);
+    nameTag(tc.name, tc.x, ty+bob-tc.s*260-22, tc.s*0.6, false);
   }
   // visitors, back to front
   const order=[...visitors].sort((a,b)=>a.y-b.y);
