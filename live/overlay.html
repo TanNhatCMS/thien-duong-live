@@ -163,7 +163,7 @@ let chantHide=null;
 function showChant(text){ document.getElementById('chantText').textContent=text; const el=document.getElementById('chant'); el.classList.add('show'); clearTimeout(chantHide); chantHide=setTimeout(()=>el.classList.remove('show'), 14000); }
 
 /* ======================= audio ======================= */
-let AC=null, master=null, musicGain=null, sfx=null, settings={ music:true, mo:true, moBpm:52 };
+let AC=null, master=null, musicGain=null, sfx=null, settings={ music:true, bell:true, bellEveryMin:3 };
 const TRACKS=['/assets/music/music1.mp3','/assets/music/music2.mp3']; let trackIdx=Math.floor(Math.random()*TRACKS.length), musicEl=null;
 document.getElementById('unmute').onclick = e => { e.currentTarget.remove(); startAudio(); };
 function startAudio(){
@@ -171,7 +171,7 @@ function startAudio(){
   master = AC.createGain(); master.gain.value=.9; master.connect(AC.destination);
   musicGain = AC.createGain(); musicGain.gain.value=settings.music?.5:0; musicGain.connect(master);
   sfx = AC.createGain(); sfx.gain.value=1; sfx.connect(master);
-  nextTrack(); scheduleMo(); bell();
+  nextTrack(); scheduleBell(); bell();
 }
 function nextTrack(){
   if (musicEl){ musicEl.pause(); }
@@ -185,13 +185,7 @@ function bell(big){
   for (const [f,a,d] of [[216,.55,7],[432,.35,5],[1296,.12,3],[2160,.05,2]]) { const o=AC.createOscillator(); o.type='sine'; o.frequency.value=f*(big?.75:1); const g=AC.createGain(); g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(a*k*.7,t+.015); g.gain.exponentialRampToValueAtTime(.0005,t+d*k); o.connect(g); g.connect(sfx); o.start(t); o.stop(t+d*k+.1); }
   haloPulse=1;
 }
-function mo(){
-  if(!AC) return; const t=AC.currentTime;
-  const o=AC.createOscillator(); o.type='triangle'; o.frequency.setValueAtTime(620,t); o.frequency.exponentialRampToValueAtTime(380,t+.05);
-  const bp=AC.createBiquadFilter(); bp.type='bandpass'; bp.frequency.value=700; bp.Q.value=3; const g=AC.createGain(); g.gain.setValueAtTime(.35,t); g.gain.exponentialRampToValueAtTime(.001,t+.14);
-  o.connect(bp); bp.connect(g); g.connect(sfx); o.start(t); o.stop(t+.16);
-}
-let moTimer=null; function scheduleMo(){ clearInterval(moTimer); if (AC && settings.mo) moTimer=setInterval(mo, 60000/Math.max(20,settings.moBpm||52)); }
+let bellTimer=null; function scheduleBell(){ clearInterval(bellTimer); if (AC && settings.bell) bellTimer=setInterval(()=>bell(), Math.max(1,settings.bellEveryMin||3)*60000); }
 // server-made voice lines play one after another
 const ttsQ=[]; let ttsPlaying=false;
 function queueTTS(url, onStart){ ttsQ.push({url,onStart}); playTTS(); }
@@ -236,14 +230,13 @@ function connect(){
       case 'tts': queueTTS(m.url); break;
       case 'chant': showChant(m.text); bell(); break;
       case 'bell': bell(true); break;
-      case 'mo1': mo(); break;
     }
   };
 }
 function applySettings(){
   document.getElementById('title').textContent=settings.title||'Thiên Đàng';
   document.getElementById('subtitle').textContent=settings.subtitle||'Bình an cho bạn';
-  duck(false); scheduleMo();
+  duck(false); scheduleBell();
 }
 connect();
 
