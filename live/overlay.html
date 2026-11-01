@@ -291,7 +291,7 @@ function frame(now){
     else if (idle){ const fw=220, fh=260, fr=Math.floor(t*1.2+ti*1.3)%4; ctx.drawImage(idle, fr*fw, 0, fw, fh, tc.x-fw*tc.s/2, tc.y+bob-fh*tc.s, fw*tc.s, fh*tc.s); }
     else if (fly){ ctx.drawImage(fly, 7*212, 0, 212, 300, tc.x-212*tc.s/2, tc.y+bob-300*tc.s, 212*tc.s, 300*tc.s); }
     else sprite(A[tc.skin],tc.x,tc.y+bob,tc.s);
-    tag(tc.name,tc.x,ty+bob-tc.s*260-22,tc.s,'gold'); }
+    tag(tc.name,tc.x,ty+bob-tc.s*260-22,tc.s*0.6,'gold'); } // smaller pills: teachers are only ~115px apart, full-size pills overlapped each other
   // visitors back to front
   const bubbles=[];
   const list=[...visitors.values()].sort((a,b)=>a.y-b.y);
